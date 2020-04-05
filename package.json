@@ -1,0 +1,20 @@
+{
+  "name": "devcamp-api",
+  "version": "1.0.0",
+  "description": "Node API masterclass",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "NODE_ENV=production node app.js",
+    "dev": "nodemon app.js"
+  },
+  "author": "Elie Kwizera",
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1"
+  }
+}
