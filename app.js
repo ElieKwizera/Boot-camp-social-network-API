@@ -2,6 +2,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const logger = require("./middleware/logger");
 const DBConnect = require("./config/db");
+const errorHandler = require("./middleware/error");
 
 const colors = require("colors");
 
@@ -16,9 +17,11 @@ const app = express();
 
 app.use(express.json());
 
-app.use(logger);
+//app.use(logger);
 
 app.use("/api/bootcamps", bootcampRoutes);
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
