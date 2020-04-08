@@ -105,7 +105,7 @@ BootcampSchema.pre("save", function (next) {
   next();
 });
 
-BootcampSchema.pre("save", async function () {
+BootcampSchema.pre("save", async function (next) {
   const loc = await geocoder.geocode(this.address);
   this.location = {
     type: "Point",
