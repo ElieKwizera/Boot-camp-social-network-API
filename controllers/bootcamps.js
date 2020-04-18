@@ -33,6 +33,17 @@ exports.createBootcamp = async (req, res, next) =>
 {
     try
     {
+        req.body.user = req.user.id;
+        const publishedBootcamp = await Bootcamp.findOne({user:req.user.id});
+        if (publishedBootcamp && req.user.role !== 'admin')
+        {
+            console.log(publishedBootcamp);
+
+           return  res.status(400).json({
+                success: false,
+                message: 'not authorized to publish more than one bootcamp'
+            });
+        }
         const bootcamp = await Bootcamp.create(req.body);
         res.status(201).json({
             success: true,
@@ -48,20 +59,32 @@ exports.updateBootcamp = async (req, res, next) =>
 {
     try
     {
-        const updateBootcamp = await Bootcamp.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            {
-                new: true,
-                runValidators: true
-            }
-        );
+       let updateBootcamp = await Bootcamp.findByIdAndUpdate(req.params.id);
         if (!updateBootcamp)
         {
             return res
                 .status(404)
                 .json({success: false, message: "bootcamp not found"});
         }
+        if(updateBootcamp.user.toString() !== req.user.id.toString() && req.user.role !== 'admin')
+        {
+            return res
+                .status(401)
+                .json({success: false, message: "not authorized to update this bootcamp"});
+        }
+
+        updateBootcamp = await Bootcamp.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            {
+                new: true,
+                runValidators: true
+            });
+        res.status(200).json({
+            success:true,
+            data: updateBootcamp
+        });
+
     } catch (error)
     {
         next(error);
@@ -75,8 +98,19 @@ exports.deleteBootcamp = async (req, res, next) =>
         const bootcamp = await Bootcamp.findById(req.params.id);
         if (!bootcamp)
         {
-            res.status(400).json({success: false});
+           return res.status(400).json({
+               success: false,
+               message: 'bootcamp not found'
+           });
         }
+        if (bootcamp.user.toString() !== req.user.id.toString() && req.user.role !== 'admin')
+        {
+           return  res.status(400).json({
+                success: false,
+                message: 'You can not delete the bootcamp unless you are the owner'
+            });
+        }
+
 
         bootcamp.remove();
 
@@ -110,6 +144,13 @@ exports.uploadBootcampPhoto = async (req, res, next) =>
                     message: 'No file to upload'
                 }
             );
+        }
+        if (bootcamp.user.toString() !== req.user.id.toString() && req.user.role !== 'admin')
+        {
+            return  res.status(400).json({
+                success: false,
+                message: 'You can not delete the bootcamp unless you are the owner'
+            });
         }
         const photo = req.files.file;
 

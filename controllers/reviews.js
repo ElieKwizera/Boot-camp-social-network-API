@@ -1,18 +1,18 @@
-const Course = require('../models/Course');
+const Review = require('../models/Review');
 const Bootcamp = require('../models/Bootcamp');
 
-exports.getCourses = async (req, res, next) =>
+exports.getReviews = async (req, res, next) =>
 {
     try
     {
         if (req.params.bootcampID)
         {
-            const courses = await Course.find({bootcamp: req.params.bootcampID});
+            const reviews = await Review.find({bootcamp: req.params.bootcampID});
             return res.status(200).json(
                 {
                     success: true,
-                    count: courses.length,
-                    data: courses
+                    count: reviews.length,
+                    data: reviews
                 }
             );
         }
@@ -27,12 +27,12 @@ exports.getCourses = async (req, res, next) =>
 
 };
 
-exports.getCourse = async (req, res, next) =>
+exports.getReview = async (req, res, next) =>
 {
     try
     {
         const id = req.params.id;
-        const course = await Course.findById(id).populate(
+        const review = await Review.findById(id).populate(
             {
                 path: 'bootcamp',
                 select: 'name description'
@@ -41,7 +41,7 @@ exports.getCourse = async (req, res, next) =>
 
         res.status(200).json({
             success: true,
-            data: course
+            data: review
         });
     } catch (error)
     {
@@ -49,7 +49,7 @@ exports.getCourse = async (req, res, next) =>
     }
 };
 
-exports.addCourse = async (req, res, next) =>
+exports.addReview = async (req, res, next) =>
 {
     try
     {
@@ -64,12 +64,12 @@ exports.addCourse = async (req, res, next) =>
                 message: 'You can not create a course unless you are the publisher'
             });
         }
-        const course = await Course.create(req.body);
+        const review = await Review.create(req.body);
 
         res.status(200).json(
             {
                 success: true,
-                data: course
+                data: review
             }
         );
     } catch (error)
@@ -78,37 +78,37 @@ exports.addCourse = async (req, res, next) =>
     }
 };
 
-exports.updateCourse = async (req, res, next) =>
+exports.updateReview = async (req, res, next) =>
 {
     try
     {
-        let course = await Course.findById(req.params.id);
+        let review = await Review.findById(req.params.id);
 
-        if (!course)
+        if (!review)
         {
             return res.status(404).json(
                 {
                     success: false,
-                    message: 'course not found'
+                    message: 'Review not found'
                 }
             );
         }
 
-        if (Course.user.toString() !== req.user.id.toString() && req.user.role !== 'admin')
+        if (Review.user.toString() !== req.user.id.toString() && req.user.role !== 'admin')
         {
             return  res.status(400).json({
                 success: false,
-                message: 'You can not update a course unless you are the publisher'
+                message: 'You can not update a review unless you are the publisher'
             });
         }
-        course = await Course.findByIdAndUpdate(req.params.id, req.body,
+        review = await Review.findByIdAndUpdate(req.params.id, req.body,
             {
                 new: true,
                 runValidators: true
             });
         res.status(200).json({
             success: true,
-            data: course
+            data: review
         });
 
     } catch (error)
@@ -117,31 +117,31 @@ exports.updateCourse = async (req, res, next) =>
     }
 };
 
-exports.deleteCourse = async (req, res, next) =>
+exports.deleteReview = async (req, res, next) =>
 {
     try
     {
-        let course = await Course.findById(req.params.id);
+        let review = await Review.findById(req.params.id);
 
-        if (!course)
+        if (!review)
         {
             return res.status(404).json(
                 {
                     success: false,
-                    message: 'course not found'
+                    message: 'review not found'
                 }
             );
         }
 
-        if (Course.user.toString() !== req.user.id.toString() && req.user.role !== 'admin')
+        if (Review.user.toString() !== req.user.id.toString() && req.user.role !== 'admin')
         {
             return  res.status(400).json({
                 success: false,
-                message: 'You can not create a course unless you are the publisher'
+                message: 'You can not delete a review unless you are the publisher'
             });
         }
 
-        await Course.findByIdAndDelete(req.params.id);
+        await Review.findByIdAndDelete(req.params.id);
         res.status(200).json(
             {
                 sucess: true,
