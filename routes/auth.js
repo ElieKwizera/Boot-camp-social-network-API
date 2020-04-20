@@ -1,6 +1,6 @@
 const express = require('express');
 
-const {register,login,getMe,forgotPassword,resetPassword,updateDetails,updatePasswords} = require('../controllers/auth');
+const {register,login,getMe,forgotPassword,resetPassword,updateDetails,updatePasswords,logout} = require('../controllers/auth');
 const {protect} = require('../middleware/auth');
 
 const router = express.Router();
@@ -28,4 +28,8 @@ router
 router
     .route('/updatePassword')
     .put(protect,updatePasswords);
+router
+    .route('/logout')
+    .get(logout);
+
 module.exports = router;
